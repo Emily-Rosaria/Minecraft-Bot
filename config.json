@@ -1,0 +1,15 @@
+{
+  "prefix": ["$","+"],
+  "guild": "848251787726028851",
+  "channels":{
+    "status":"848274767034449990"
+  },
+  "perms": {
+    "dev": "247344219809775617",
+    "admin": "848255993431195718",
+    "op": "848256838696566854",
+    "whitelist": "848256186498809866"
+  },
+  "dbName":"minecraft",
+  "github":"https://github.com/Emily-Rosaria/Minecraft-Bot"
+}
