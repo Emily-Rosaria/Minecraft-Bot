@@ -57,15 +57,31 @@ for (const file of eventFiles) {
 }
 
 async function mcTest(mcClient, logChannel) {
-  let account = await client.getAccount();
+  let account = await mcClient.getAccount();
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
-  let servers = await client.getServers();
-
+  let servers = await mcClient.getServers();
+  let status = "";
+  const statJSON = {
+    "0": "OFFLINE",
+    "1": "ONLINE",
+    "2": "STARTING",
+    "3": "STOPPING",
+    "4": "RESTARTING",
+    "5": "SAVING",
+    "6": "LOADING",
+    "7": "CRASHED",
+    "8": "PENDING",
+    "9": "???",
+    "10": "PREPARING"
+  };
   for(let server of servers) {
       console.log(server.name + ": " + server.id);
       server.subscribe();
       server.on("status", function(server) {
-          logChannel.send(`${server.name}: ${server.status}`);
+          if ("" + server.status != "" + status) {
+            status = "" + server.status;
+            logChannel.send(`${server.name} is now ${statJSON[server.status]}`);
+          }
       });
   }
 }
