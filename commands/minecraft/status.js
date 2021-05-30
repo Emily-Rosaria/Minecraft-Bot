@@ -5,7 +5,6 @@ require('dotenv').config(); //for .env file
 module.exports = {
     name: 'status', // The name of the command
     description: 'Sets the bots game status!', // The description of the command (for help text)
-    perms: 'dev', //restricts to bot dev only (me)
     aliases: ['server'],
     allowDM: true,
     cooldown: 10,
@@ -42,8 +41,8 @@ module.exports = {
         .addField("Software",`${server.software.name} ${server.software.version}`,true)
         .setTimestamp();
         if (server.players.count > 0) {
-          const playerList = server.players.list.join('\n');
-          embed.addField("Currently Online:",playerList,false);
+          const playerList = server.players.list.join(', ');
+          embed.addField("Currently Online",playerList,false);
         }
         await message.channel.send({embed: embed});
       }
