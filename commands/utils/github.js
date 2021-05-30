@@ -10,6 +10,6 @@ module.exports = {
     perms: false, //no user-based restrictions
     allowDM: true,
     async execute(message, args) {
-        message.reply("My source code can be found here:\n> "+config.github);
+        message.reply("My spaghetti source code can be found here:\n> "+config.github);
     },
 };
