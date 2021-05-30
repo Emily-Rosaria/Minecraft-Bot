@@ -68,7 +68,7 @@ async function mcTest(mcClient, logChannel) {
     "2": ["🟠","is STARTING..."],
     "3": ["🔴","is STOPPING..."],
     "4": ["🟠","is RESTARTING!"],
-    "5": ["🔵","is SAVING."],
+    "5": ["🔵","is SAVING..."],
     "6": ["🟠","is LOADING..."],
     "7": ["🔴","has CRASHED!"],
     "8": ["🟠","is PENDING..."],
@@ -107,7 +107,7 @@ async function mcTest(mcClient, logChannel) {
               players = [];
               return;
             }
-            var msg = "🔴" +players.join(", ") + " have logged off from " + server.name + ".";
+            var msg = "🔴 " +players.join(", ") + " have logged off from " + server.name + ".";
             players = [];
             logChannel.send(msg);
             return;

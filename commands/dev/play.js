@@ -1,5 +1,5 @@
 module.exports = {
-    name: 'status', // The name of the command
+    name: 'play', // The name of the command
     description: 'Sets the bots game status!', // The description of the command (for help text)
     perms: 'dev', //restricts to bot dev only (me)
     allowDM: true,
