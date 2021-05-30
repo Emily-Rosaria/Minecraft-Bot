@@ -63,25 +63,26 @@ async function mcTest(mcClient, logChannel) {
   let status = "";
   let players = [];
   const statJSON = {
-    "0": "OFFLINE",
-    "1": "ONLINE",
-    "2": "STARTING",
-    "3": "STOPPING",
-    "4": "RESTARTING",
-    "5": "SAVING",
-    "6": "LOADING",
-    "7": "CRASHED",
-    "8": "PENDING",
-    "9": "???",
-    "10": "PREPARING"
+    "0": ["🔴","OFFLINE"],
+    "1": ["🟢","ONLINE"],
+    "2": ["🟠","STARTING"],
+    "3": ["🔴","STOPPING"],
+    "4": ["🟠","RESTARTING"],
+    "5": ["🔵","SAVING"],
+    "6": ["🟠","LOADING"],
+    "7": ["🔴","CRASHED"],
+    "8": ["🟠","PENDING"],
+    "9": ["","???"],
+    "10": ["🟠","PREPARING"]
   };
+
   for(let server of servers) {
       console.log(server.name + ": " + server.id);
       server.subscribe();
       server.on("status", function(server) {
           if ("" + server.status != "" + status) {
             status = "" + server.status;
-            logChannel.send(`${server.name} is now ${statJSON[server.status]}`);
+            logChannel.send(`${(statJSON[server.status])[0]}${server.name} is now ${(statJSON[server.status])[1]}`);
             return;
           }
           if (server.players.list) {
@@ -91,10 +92,10 @@ async function mcTest(mcClient, logChannel) {
             const joinedPlayers = server.players.list.filter(p=>players.indexOf(p) === -1);
             var msg = "";
             if (leftPlayers.length > 0) {
-              msg = leftPlayers.join(", ") + " have logged off from " + server.name + "\n";
+              msg = "🔴" + leftPlayers.join(", ") + " has logged off from " + server.name + ".\n";
             }
             if (joinedPlayers.length > 0) {
-              msg = msg + joinedPlayers.join(", ") + " have logged on to " + server.name;
+              msg = msg + "🟢" + joinedPlayers.join(", ") + " has logged on to " + server.name + "!";
             }
             if (msg && msg != "") {
               logChannel.send(msg);
@@ -102,7 +103,11 @@ async function mcTest(mcClient, logChannel) {
             players = server.players.list;
             return;
           } else if (players.length > 0) {
-            var msg = players.join(", ") + " have logged off from " + server.name;
+            if ("" + server.status == "1") {
+              players = [];
+              return;
+            }
+            var msg = "🔴" +players.join(", ") + " have logged off from " + server.name + ".";
             players = [];
             logChannel.send(msg);
             return;
