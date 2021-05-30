@@ -61,6 +61,7 @@ async function mcTest(mcClient, logChannel) {
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
   let servers = await mcClient.getServers();
   let status = "";
+  let players = [];
   const statJSON = {
     "0": "OFFLINE",
     "1": "ONLINE",
@@ -81,6 +82,30 @@ async function mcTest(mcClient, logChannel) {
           if ("" + server.status != "" + status) {
             status = "" + server.status;
             logChannel.send(`${server.name} is now ${statJSON[server.status]}`);
+            return;
+          }
+          if (server.players.list) {
+            // get players in the old list who aren't in the new one
+            const leftPlayers = players.filter(p=>server.players.list.indexOf(p) === -1);
+            // get players in the new list who weren't in the old one
+            const joinedPlayers = server.players.list.filter(p=>players.indexOf(p) === -1);
+            var msg = "";
+            if (leftPlayers.length > 0) {
+              msg = leftPlayers.join(", ") + " have logged off from " + server.name + "\n";
+            }
+            if (joinedPlayers.length > 0) {
+              msg = msg + joinedPlayers.join(", ") + " have logged on to " + server.name;
+            }
+            if (msg && msg != "") {
+              logChannel.send(msg);
+            }
+            players = server.players.list;
+            return;
+          } else if (players.length > 0) {
+            var msg = players.join(", ") + " have logged off from " + server.name;
+            players = [];
+            logChannel.send(msg);
+            return;
           }
       });
   }
