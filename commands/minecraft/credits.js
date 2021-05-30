@@ -32,6 +32,5 @@ module.exports = {
       .setFooter("exaroton.com")
       .setTimestamp();
       await message.channel.send({embed: embed});
-      }
     },
 };
