@@ -56,30 +56,51 @@ for (const file of eventFiles) {
     client.events.set(event.name, event);
 }
 
+const statJSON = {
+  "0": ["🔴","Offline","#FF0000"],
+  "1": ["🟢","Online","#37d53f"],
+  "2": ["🟠","Starting","#fa7f26"],
+  "3": ["🔴","Stopping","#FF0000"],
+  "4": ["🟠","Restarting","#fa7f26"],
+  "5": ["🔵","Saving","#2370dd"],
+  "6": ["🟠","Loading","#fa7f26"],
+  "7": ["🔴","Crashed","#FF0000"],
+  "8": ["🟠","Pending","#fa7f26"],
+  "9": ["","???","#000000"],
+  "10": ["🟠","Preparing","#fa7f26"]
+};
+
+async function setBotStatus(server, client) {
+  var botStatus = {};
+  const statusArr = statJSON[""+server.status];
+  if (""+ server.status == "1") {
+    botStatus.status = "online";
+    botStatus.activity = { type: 'PLAYING', name: `${statusArr[0]} ${server.players.count}/${server.players.max} online` };
+  } else if (["2","4","6","8","10"].includes(""+ server.status)) {
+    botStatus.status = "idle";
+    botStatus.activity = { type: 'PLAYING', name: `${statusArr[0]} ${statusArr[1]}` };
+  } else {
+    botStatus.status = "dnd";
+    botStatus.activity = { type: 'PLAYING', name: `${statusArr[0]} ${statusArr[1]}` };
+  }
+  client.user.setPresence(botStatus);
+}
+
 async function mcTest(mcClient, logChannel) {
   let account = await mcClient.getAccount();
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
   let servers = await mcClient.getServers();
   let status = "";
   let players = [];
-  const statJSON = {
-    "0": ["🔴","Offline","#FF0000"],
-    "1": ["🟢","Online","#37d53f"],
-    "2": ["🟠","Starting","#fa7f26"],
-    "3": ["🔴","Stopping","#FF0000"],
-    "4": ["🟠","Restarting","#fa7f26"],
-    "5": ["🔵","Saving","#2370dd"],
-    "6": ["🟠","Loading","#fa7f26"],
-    "7": ["🔴","Crashed","#FF0000"],
-    "8": ["🟠","Pending","#fa7f26"],
-    "9": ["","???","#000000"],
-    "10": ["🟠","Preparing","#fa7f26"]
-  };
 
   for (let server of servers) {
       console.log("Subscribing to " + server.name + ". ID: " + server.id);
+      setBotStatus(server, logChannel.client);
+      status = ""+server.status;
+      players = server.players.list || [];
       server.subscribe();
       server.on("status", function(server) {
+          setBotStatus(server, logChannel.client);
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
@@ -113,9 +134,9 @@ async function mcTest(mcClient, logChannel) {
               const embed = new Discord.MessageEmbed()
               .setTitle(title + " - Player Disconnected")
               .setFooter(footer)
-              .setDescription(`${left} has logged off from ${server.name}!`)
+              .setDescription(`**${left}** has logged off from ${server.name}!`)
               .setColor("#FF0000")
-              .addField("Status",`${status[0]} ${status[1]}`,true)
+              .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
               .addField("Players",`${server.players.count}/${server.players.max}`,true)
               .addField("Software",`${server.software.name} ${server.software.version}`,true)
               .setTimestamp();
@@ -126,9 +147,9 @@ async function mcTest(mcClient, logChannel) {
               const embed = new Discord.MessageEmbed()
               .setTitle(title + " - Player Connected")
               .setFooter(footer)
-              .setDescription(`${joined} has logged on to ${server.name}!`)
+              .setDescription(`**${joined}** has logged on to ${server.name}!`)
               .setColor("#37d53f")
-              .addField("Status",`${status[0]} ${status[1]}`,true)
+              .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
               .addField("Players",`${server.players.count}/${server.players.max}`,true)
               .addField("Software",`${server.software.name} ${server.software.version}`,true)
               .setTimestamp();
