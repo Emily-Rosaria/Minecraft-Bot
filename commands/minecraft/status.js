@@ -4,7 +4,7 @@ require('dotenv').config(); //for .env file
 
 module.exports = {
     name: 'status', // The name of the command
-    description: 'Sets the bots game status!', // The description of the command (for help text)
+    description: 'Shows you the server status!', // The description of the command (for help text)
     aliases: ['server'],
     allowDM: true,
     cooldown: 10,
