@@ -21,7 +21,7 @@ module.exports = {
       const color = hours > 20 ? "#37d53f" : (hours > 10 ? "#fa7f26" : "#ff0000");
       const embed = new Discord.MessageEmbed()
       .setTitle("The Server Bank")
-      .setDescription(`Hosting costs about 1 credit / 1 GB RAM / 1 hour. Currently, we should have about ${hours} of uptime left. This will likely equate to at least ${days}, assuming the server is up 4 hours per day.`)
+      .setDescription(`Hosting costs about 1 credit / 1 GB RAM / 1 hour. Currently, we should have about ${hours} of uptime left. This will likely equate to at least ${days} days, assuming the server is up for an average of 4 hours per day.`)
       .setColor(color)
       .addField("Credits",`${account.credits}`,true)
       .addField("RAM",`${ram} GB`,true)
