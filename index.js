@@ -64,7 +64,7 @@ const statJSON = {
   "4": ["🟠","Restarting","#fa7f26","Starting"],
   "5": ["🔵","Saving","#2370dd","Offline"],
   "6": ["🟠","Loading","#fa7f26","Starting"],
-  "7": ["🔴","Crashed","#FF0000","Offline"],
+  "7": ["🔴","Crashed","#FF0000","Crashed"],
   "8": ["🟠","Pending","#fa7f26","Pending"],
   "9": ["","???","#000000","Pending"],
   "10": ["🟠","Preparing","#fa7f26","Starting"]
@@ -136,15 +136,15 @@ async function mcTest(mcClient, logChannel) {
             .setTimestamp();
             if (""+server.status != "1") {
               if (["2"].includes(""+server.status)) {
-                embed.setDescription(`**${server.name} is now ${statusArr[1]}.`);
+                embed.setDescription(`**${server.name}** is now ${statusArr[1]}.`);
               } else if (["7"].includes(""+server.status)) {
-                embed.setDescription(`**${server.name} has ${statusArr[1]}!`);
+                embed.setDescription(`**${server.name}** has ${statusArr[1]}!`);
               } else {
-                embed.setDescription(`**${server.name} is ${statusArr[1]}...`);
+                embed.setDescription(`**${server.name}** is ${statusArr[1]}...`);
               }
               logChannel.send({embed: embed});
             } else {
-              embed.setDescription(`**${server.name} is now ${statusArr[1]}!`);
+              embed.setDescription(`**${server.name}** is now ${statusArr[1]}!`);
               const statusPing = "<@&" + config.pings.status + ">";
               logChannel.send({embed: embed, content: statusPing});
             }
@@ -191,7 +191,7 @@ async function mcTest(mcClient, logChannel) {
               .setFooter(footer)
               .setDescription("As there are currently no players online, the server may automatically go offline in just under 10 minutes.")
               .setColor("#37d53f")
-              .addField("Status",`${status[0]} ${status[1]}`,true)
+              .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
               .addField("Players",`${server.players.count}/${server.players.max}`,true)
               .addField("Software",`${server.software.name} ${server.software.version}`,true)
               .setTimestamp();
