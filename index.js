@@ -57,20 +57,20 @@ for (const file of eventFiles) {
 }
 
 const statJSON = {
-  "0": ["🔴","Offline","#FF0000"],
-  "1": ["🟢","Online","#37d53f"],
-  "2": ["🟠","Starting","#fa7f26"],
-  "3": ["🔴","Stopping","#FF0000"],
-  "4": ["🟠","Restarting","#fa7f26"],
-  "5": ["🔵","Saving","#2370dd"],
-  "6": ["🟠","Loading","#fa7f26"],
-  "7": ["🔴","Crashed","#FF0000"],
-  "8": ["🟠","Pending","#fa7f26"],
-  "9": ["","???","#000000"],
-  "10": ["🟠","Preparing","#fa7f26"]
+  "0": ["🔴","Offline","#FF0000","Offline"],
+  "1": ["🟢","Online","#37d53f","Online"],
+  "2": ["🟠","Starting","#fa7f26","Starting"],
+  "3": ["🔴","Stopping","#FF0000","Offline"],
+  "4": ["🟠","Restarting","#fa7f26","Starting"],
+  "5": ["🔵","Saving","#2370dd","Offline"],
+  "6": ["🟠","Loading","#fa7f26","Starting"],
+  "7": ["🔴","Crashed","#FF0000","Offline"],
+  "8": ["🟠","Pending","#fa7f26","Pending"],
+  "9": ["","???","#000000","Pending"],
+  "10": ["🟠","Preparing","#fa7f26","Starting"]
 };
 
-async function setBotStatus(server, client) {
+async function setBotStatus(server, client, oldStats) {
   var botStatus = {};
   const statusArr = statJSON[""+server.status];
   if (""+ server.status == "1") {
@@ -84,6 +84,24 @@ async function setBotStatus(server, client) {
     botStatus.activity = { type: 'PLAYING', name: `${statusArr[0]} ${statusArr[1]}` };
   }
   client.user.setPresence(botStatus);
+
+  var newStats = ""+server.status;
+  var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status);
+
+  if (!oldStats) {
+    const newText = statJSON[newStats][3];
+    await statRole.setName(`Server Status: ${newText}`);
+    const color = newStats == "5" ? statJSON["0"][2] : statJSON[newStats][2];
+    await statRole.setColor(color);
+  } else {
+    const oldText = statJSON[oldStats][3];
+    const newText = statJSON[newStats][3];
+    if (oldText != newText) {
+      await statRole.setName(`Server Status: ${newText}`);
+      const color = newStats == "5" ? statJSON["0"][2] : statJSON[newStats][2];
+      await statRole.setColor(color);
+    }
+  }
 }
 
 async function mcTest(mcClient, logChannel) {
@@ -100,7 +118,7 @@ async function mcTest(mcClient, logChannel) {
       players = server.players.list || [];
       server.subscribe();
       server.on("status", function(server) {
-          setBotStatus(server, logChannel.client);
+          setBotStatus(server, logChannel.client, status);
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
