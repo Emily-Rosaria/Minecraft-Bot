@@ -104,73 +104,83 @@ async function mcTest(mcClient, logChannel) {
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
+
+          // do updates for server status
           if ("" + server.status != "" + status) {
             status = "" + server.status;
             const embed = new Discord.MessageEmbed()
             .setTitle(title + " - Status Update")
             .setFooter(footer)
-            .setDescription(server.motd)
             .setColor(statusArr[2])
             .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
             .addField("Players",`${server.players.count}/${server.players.max}`,true)
             .addField("Software",`${server.software.name} ${server.software.version}`,true)
             .setTimestamp();
             if (""+server.status != "1") {
+              if (["2"].includes(""+server.status)) {
+                embed.setDescription(`**${server.name} is now ${statusArr[1]}.`);
+              } else if (["7"].includes(""+server.status)) {
+                embed.setDescription(`**${server.name} has ${statusArr[1]}!`);
+              } else {
+                embed.setDescription(`**${server.name} is ${statusArr[1]}...`);
+              }
               logChannel.send({embed: embed});
             } else {
+              embed.setDescription(`**${server.name} is now ${statusArr[1]}!`);
               const statusPing = "<@&" + config.pings.status + ">";
               logChannel.send({embed: embed, content: statusPing});
             }
+          } else {
+            status = "" + server.status;
           }
-          if (server.players.list) {
+
+          // do posts for players joining/leaving
+          if (server.players.list || players.length > 0) {
+            const serverlist = server.players.list || [];
             // get players in the old list who aren't in the new one
-            const leftPlayers = players.filter(p=>server.players.list.indexOf(p) === -1);
+            const leftPlayers = players.filter(p=>serverlist.indexOf(p) === -1);
             // get players in the new list who weren't in the old one
-            const joinedPlayers = server.players.list.filter(p=>players.indexOf(p) === -1);
+            const joinedPlayers = serverlist.filter(p=>players.indexOf(p) === -1);
             // server status text
             const statusArr = statJSON[""+server.status];
 
+            // post for players who left
             for (let left of leftPlayers) {
               const embed = new Discord.MessageEmbed()
-              .setTitle(title + " - Player Disconnected")
               .setFooter(footer)
               .setDescription(`**${left}** has logged off from ${server.name}!`)
               .setColor("#FF0000")
-              .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
-              .addField("Players",`${server.players.count}/${server.players.max}`,true)
-              .addField("Software",`${server.software.name} ${server.software.version}`,true)
               .setTimestamp();
               logChannel.send({embed: embed});
             }
 
+            // post for players who joined
             for (let joined of joinedPlayers) {
               const embed = new Discord.MessageEmbed()
-              .setTitle(title + " - Player Connected")
               .setFooter(footer)
               .setDescription(`**${joined}** has logged on to ${server.name}!`)
               .setColor("#37d53f")
-              .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
+              .setTimestamp();
+              logChannel.send({embed: embed});
+            }
+
+            players = serverlist;
+
+            // if the last player left, let people know the server may shut down soon
+            if (""+server.status == "1" && (server.players.count == 0 || players.length == 0) && leftPlayers.length > 0) {
+              const embed = new Discord.MessageEmbed()
+              .setTitle(title + " - Server Notice")
+              .setFooter(footer)
+              .setDescription("As there are currently no players online, the server may automatically go offline in just under 10 minutes.")
+              .setColor("#37d53f")
+              .addField("Status",`${status[0]} ${status[1]}`,true)
               .addField("Players",`${server.players.count}/${server.players.max}`,true)
               .addField("Software",`${server.software.name} ${server.software.version}`,true)
               .setTimestamp();
               logChannel.send({embed: embed});
             }
-          }
-          if (server.players.list) {
-            players = server.players.list;
           } else {
             players = [];
-          }
-          if (""+server.status == "1" && server.players.count == 0) {
-            const embed = new Discord.MessageEmbed()
-            .setTitle(title + " - Server Notice")
-            .setFooter(footer)
-            .setDescription("As there are currently no players online, the server may automatically go offline in just under 10 minutes.")
-            .setColor("#37d53f")
-            .addField("Status",`${status[0]} ${status[1]}`,true)
-            .addField("Players",`${server.players.count}/${server.players.max}`,true)
-            .addField("Software",`${server.software.name} ${server.software.version}`,true)
-            .setTimestamp();
           }
       });
   }
