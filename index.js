@@ -135,7 +135,7 @@ async function mcTest(mcClient, logChannel) {
             .addField("Software",`${server.software.name} ${server.software.version}`,true)
             .setTimestamp();
             if (""+server.status != "1") {
-              if (["2"].includes(""+server.status)) {
+              if (["0"].includes(""+server.status)) {
                 embed.setDescription(`**${server.name}** is now ${statusArr[1]}.`);
               } else if (["7"].includes(""+server.status)) {
                 embed.setDescription(`**${server.name}** has ${statusArr[1]}!`);
