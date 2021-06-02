@@ -35,11 +35,11 @@ module.exports = {
         return message.reply("The server is currently "+ statJSON[""+server.status][1].toLowerCase() +", so commands cannot be sent.");
       }
       try {
-          await server.executeCommand(command);
+          await server.executeCommand("command={"+command+"}");
           await message.reply("Done! Command `" + command + "` was sent to the server successfully.");
       } catch (e) {
           const errorMsg = e.stack.toString().length > 1900 ? e.stack.toString().slice(0,1900) + "..." : e.stack.toString();
-          await message.reply("Error running command:\n```\n"+errorMsg+"\n```");
+          await message.reply("Error sending command of `"+command+"`:\n```\n"+e.message+"\n"+errorMsg+"\n```");
       }
     },
 };

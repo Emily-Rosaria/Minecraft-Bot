@@ -130,13 +130,13 @@ async function mcTest(mcClient, logChannel) {
             .setTitle(title + " - Status Update")
             .setFooter(footer)
             .setColor(statusArr[2])
-            .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
-            .addField("Players",`${server.players.count}/${server.players.max}`,true)
-            .addField("Software",`${server.software.name} ${server.software.version}`,true)
             .setTimestamp();
             if (""+server.status != "1") {
               if (["0"].includes(""+server.status)) {
-                embed.setDescription(`**${server.name}** is now ${statusArr[1]}.`);
+                embed.setDescription(`**${server.name}** is now ${statusArr[1]}.`)
+                .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
+                .addField("Players",`${server.players.count}/${server.players.max}`,true)
+                .addField("Software",`${server.software.name} ${server.software.version}`,true);
               } else if (["7"].includes(""+server.status)) {
                 embed.setDescription(`**${server.name}** has ${statusArr[1]}!`);
               } else {
@@ -144,7 +144,10 @@ async function mcTest(mcClient, logChannel) {
               }
               logChannel.send({embed: embed});
             } else {
-              embed.setDescription(`**${server.name}** is now ${statusArr[1]}!`);
+              embed.setDescription(`**${server.name}** is now ${statusArr[1]}!`)
+              .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
+              .addField("Players",`${server.players.count}/${server.players.max}`,true)
+              .addField("Software",`${server.software.name} ${server.software.version}`,true);
               const statusPing = "<@&" + config.pings.status + ">";
               logChannel.send({embed: embed, content: statusPing});
             }
