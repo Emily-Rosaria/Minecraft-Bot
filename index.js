@@ -77,9 +77,10 @@ async function setBotStatus(servers, client, oldServers) {
   for (var i = 0; i < servers.length; i++) {
 
     // status text stuff
-    let server = servers[i];
+    const num = i;
+    let server = servers[num];
     const statusArr = statJSON[""+server.status];
-    text[i] = statusArr[0] + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
+    text[num] = statusArr[0] + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
     if (""+ server.status == "1") {
       status = "online";
     } else if (status!="online" && ["2","4","6","8","10"].includes(""+ server.status)) {
@@ -98,7 +99,7 @@ async function setBotStatus(servers, client, oldServers) {
       const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
       await statRole.setColor(color);
     } else {
-      const oldStatus = ""+oldServers[i].status;
+      const oldStatus = ""+oldServers[num].status;
       const oldText = statJSON[oldStatus][3];
       const newText = statJSON[newStatus][3];
       if (oldText != newText) {
@@ -120,17 +121,18 @@ async function setBotStatus(servers, client, oldServers) {
 async function mcUpdates(mcClient, logChannel) {
   let account = await mcClient.getAccount();
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
-  let servers = await mcClient.getServers();
+  let servers = [...await mcClient.getServers()];
   setBotStatus(servers, logChannel.client);
   for (var i = 0; i < servers.length; i++) {
-      let server = servers[i];
-      console.log("Subscribing to " + server.name + ". ID: " + server.id);
-      let status = ""+server.status || "";
-      let players = server.players.list || [];
-      server.subscribe();
-      server.on("status", function(server) {
+      const num = i;
+      let serverI = servers[num];
+      console.log("Subscribing to " + serverI.name + ". ID: " + serverI.id);
+      let status = ""+serverI.status || "";
+      let players = serverI.players.list || [];
+      serverI.subscribe();
+      serverI.on("status", function(server) {
           const oldServers = servers;
-          servers[i] = server;
+          servers[num] = server;
           setBotStatus(servers, logChannel.client, oldServers);
           const title = server.name;
           const footer = server.address;
