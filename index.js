@@ -70,7 +70,7 @@ const statJSON = {
   "10": ["🟠","Preparing","#fa7f26","Starting"]
 };
 
-async function setBotStatus(servers, client, oldServers) {
+async function setBotStatus(servers, client) {
   var botStatus = {};
   var text = [];
   var status = "";
@@ -93,20 +93,17 @@ async function setBotStatus(servers, client, oldServers) {
     const newStatus = ""+server.status;
     var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status[server.name.replace(/Rose/,"").toLowerCase()]);
 
-    if (!oldServers || oldServers.length == 0) {
-      const newText = statJSON[newStatus][3];
-      await statRole.setName(`${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`);
-      const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
+    // new role name
+    const newText = statJSON[newStatus][3];
+    const roleText = `${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`;
+    if (statRole.name != roleText) {
+      await statRole.setName(roleText);
+    }
+
+    // change color if needed
+    const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
+    if (statRole.hexColor != color) {
       await statRole.setColor(color);
-    } else {
-      const oldStatus = ""+oldServers[num].status;
-      const oldText = statJSON[oldStatus][3];
-      const newText = statJSON[newStatus][3];
-      if (oldText != newText) {
-        await statRole.setName(`${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`);
-        const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
-        await statRole.setColor(color);
-      }
     }
   }
 
@@ -131,9 +128,8 @@ async function mcUpdates(mcClient, logChannel) {
       let players = serverI.players.list || [];
       serverI.subscribe();
       serverI.on("status", function(server) {
-          const oldServers = servers;
           servers[num] = server;
-          setBotStatus(servers, logChannel.client, oldServers);
+          setBotStatus(servers, logChannel.client);
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
