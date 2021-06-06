@@ -122,12 +122,12 @@ async function mcUpdates(mcClient, logChannel) {
   setBotStatus(servers, logChannel.client);
   for (var i = 0; i < servers.length; i++) {
       const num = i;
-      let serverI = servers[num];
-      console.log("Subscribing to " + serverI.name + ". ID: " + serverI.id);
-      let status = ""+serverI.status || "";
-      let players = serverI.players.list || [];
-      serverI.subscribe();
-      serverI.on("status", function(server) {
+      let server = servers[num];
+      console.log("Subscribing to " + server.name + ". ID: " + server.id);
+      let status = ""+server.status || "";
+      let players = server.players.list || [];
+      server.subscribe();
+      server.on("status", function(server) {
           servers[num] = server;
           setBotStatus(servers, logChannel.client);
           const title = server.name;
