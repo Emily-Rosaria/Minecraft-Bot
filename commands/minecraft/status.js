@@ -40,6 +40,9 @@ module.exports = {
         .addField("Players",`${server.players.count}/${server.players.max}`,true)
         .addField("Software",`${server.software.name} ${server.software.version}`,true)
         .setTimestamp();
+        if (server.port && server.host) {
+          embed.addField("Trouble Joining",`Try using the following dynamic IP instead: \`${server.host}:${server.port}\``,false);
+        }
         if (server.players.count > 0) {
           const playerList = server.players.list.join(', ');
           embed.addField("Currently Online",playerList,false);

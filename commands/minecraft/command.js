@@ -11,7 +11,8 @@ module.exports = {
     cooldown: 10,
     usage: '<command>', // Help text to explain how to use the command (if it had any arguments)
     async execute(message, args) {
-
+      return message.reply("Command is WIP. Sorry.");
+      /*
       const statJSON = {
         "0": ["🔴","Offline","#FF0000","Offline"],
         "1": ["🟢","Online","#37d53f","Online"],
@@ -41,5 +42,6 @@ module.exports = {
           const errorMsg = e.stack.toString().length > 1900 ? e.stack.toString().slice(0,1900) + "..." : e.stack.toString();
           await message.reply("Error sending command of `"+command+"`:\n```\n"+e.message+"\n"+errorMsg+"\n```");
       }
+      */
     },
 };

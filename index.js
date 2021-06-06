@@ -70,59 +70,68 @@ const statJSON = {
   "10": ["🟠","Preparing","#fa7f26","Starting"]
 };
 
-async function setBotStatus(server, client, oldStats) {
+async function setBotStatus(servers, client, oldServers) {
   var botStatus = {};
-  const statusArr = statJSON[""+server.status];
-  if (""+ server.status == "1") {
-    botStatus.status = "online";
-    botStatus.activity = { type: 'PLAYING', name: `${statusArr[0]} ${server.players.count}/${server.players.max} online` };
-  } else if (["2","4","6","8","10"].includes(""+ server.status)) {
-    botStatus.status = "idle";
-    botStatus.activity = { type: 'PLAYING', name: `${statusArr[0]} ${statusArr[1]}` };
-  } else {
-    botStatus.status = "dnd";
-    botStatus.activity = { type: 'PLAYING', name: `${statusArr[0]} ${statusArr[1]}` };
-  }
-  client.user.setPresence(botStatus);
+  var text = [];
+  var status = "";
+  for (var i = 0; i < servers.length; i++) {
 
-  var newStats = ""+server.status;
-  var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status);
+    // status text stuff
+    let server = servers[i];
+    const statusArr = statJSON[""+server.status];
+    text[i] = statusArr[0] + " " + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
+    if (""+ server.status == "1") {
+      status = "online";
+    } else if (status!="online" && ["2","4","6","8","10"].includes(""+ server.status)) {
+      status = "idle";
+    } else if (status!="online" && status!="idle") {
+      status = "dnd";
+    }
 
-  if (!oldStats) {
-    const newText = statJSON[newStats][3];
-    await statRole.setName(`Server Status: ${newText}`);
-    const color = newStats == "5" ? statJSON["0"][2] : statJSON[newStats][2];
-    await statRole.setColor(color);
-  } else {
-    const oldText = statJSON[oldStats][3];
-    const newText = statJSON[newStats][3];
-    if (oldText != newText) {
-      await statRole.setName(`Server Status: ${newText}`);
+    // role update stuff
+    const newStatus = ""+server.status;
+    var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status[server.name.replace(/Rose/,"").toLowerCase()]);
+
+    if (!oldServers) {
+      const newText = statJSON[newStatus][3];
+      await statRole.setName(`${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`);
       const color = newStats == "5" ? statJSON["0"][2] : statJSON[newStats][2];
       await statRole.setColor(color);
+    } else {
+      const oldStatus = ""+oldServers[i].status;
+      const oldText = statJSON[oldStatus][3];
+      const newText = statJSON[newStatus][3];
+      if (oldText != newText) {
+        await statRole.setName(`${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`);
+        const color = newStats == "5" ? statJSON["0"][2] : statJSON[newStats][2];
+        await statRole.setColor(color);
+      }
     }
   }
+
+  // update activity status
+  botStatus.activity = { type: 'PLAYING', name: text.join(', ') };
+  botStatus.status = status || "dnd";
+  client.user.setPresence(botStatus);
 }
 
-async function mcTest(mcClient, logChannel) {
+async function mcUpdates(mcClient, logChannel) {
   let account = await mcClient.getAccount();
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
   let servers = await mcClient.getServers();
-  let status = "";
-  let players = [];
-
-  for (let server of servers) {
+  setBotStatus(servers, logChannel.client);
+  for (var i = 0; i < servers.length; i++) {
+      let server = servers[i];
       console.log("Subscribing to " + server.name + ". ID: " + server.id);
-      setBotStatus(server, logChannel.client);
-      status = ""+server.status;
-      players = server.players.list || [];
+      let status = ""+server.status || "";
+      let players = server.players.list || [];
       server.subscribe();
       server.on("status", function(server) {
           setBotStatus(server, logChannel.client, status);
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
-
+          const pingRole = config.pings.status[server.name.replace(/Rose/,"").toLowerCase()];
           // do updates for server status
           if ("" + server.status != "" + status) {
             status = "" + server.status;
@@ -148,7 +157,7 @@ async function mcTest(mcClient, logChannel) {
               .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
               .addField("Players",`${server.players.count}/${server.players.max}`,true)
               .addField("Software",`${server.software.name} ${server.software.version}`,true);
-              const statusPing = "<@&" + config.pings.status + ">";
+              const statusPing = "<@&" + pingRole + ">";
               logChannel.send({embed: embed, content: statusPing});
             }
           } else {
@@ -169,7 +178,7 @@ async function mcTest(mcClient, logChannel) {
             for (let left of leftPlayers) {
               const embed = new Discord.MessageEmbed()
               .setFooter(footer)
-              .setDescription(`**${left}** has logged off from ${server.name}!`)
+              .setDescription(`**${left}** has logged off from ${server.name}! - [${server.players.count} / ${server.players.max} Online]`)
               .setColor("#FF0000")
               .setTimestamp();
               logChannel.send({embed: embed});
@@ -179,7 +188,7 @@ async function mcTest(mcClient, logChannel) {
             for (let joined of joinedPlayers) {
               const embed = new Discord.MessageEmbed()
               .setFooter(footer)
-              .setDescription(`**${joined}** has logged on to ${server.name}!`)
+              .setDescription(`**${joined}** has logged on to ${server.name}! - [${server.players.count} / ${server.players.max} Online]`)
               .setColor("#37d53f")
               .setTimestamp();
               logChannel.send({embed: embed});
@@ -216,7 +225,7 @@ client.on('ready', function() {
 
     const mcClient = new Client(process.env.MCTOKEN);
 
-    mcTest(mcClient, logChannel);
+    mcUpdates(mcClient, logChannel);
 });
 
 client.on('message', message => {

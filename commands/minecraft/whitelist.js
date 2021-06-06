@@ -35,12 +35,13 @@ module.exports = {
       const mcClient = new Client(process.env.MCTOKEN);
       let account = await mcClient.getAccount();
       let servers = await mcClient.getServers();
-      let server = servers.shift();
       try {
+        for (let server of servers) {
           let list = server.getPlayerList("whitelist");
           await list.addEntry(args[0]); // add just one entry
           const whitelist = await list.getEntries();
-          await message.reply("Done! The new server whitelist should be:\n>>> "+whitelist.join('\n'));
+        }
+        await message.reply("Done! The user `" + args[0] + "` was successfully added to both server's whitelists.");
       } catch (e) {
           const errorMsg = e.stack.toString().length > 1900 ? e.stack.toString().slice(0,1900) + "..." : e.stack.toString();
           await message.reply("Error running command:\n```\n"+errorMsg+"\n```");
