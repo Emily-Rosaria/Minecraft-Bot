@@ -92,7 +92,7 @@ async function setBotStatus(servers, client, oldServers) {
     const newStatus = ""+server.status;
     var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status[server.name.replace(/Rose/,"").toLowerCase()]);
 
-    if (!oldServers) {
+    if (!oldServers || oldServers.length == 0) {
       const newText = statJSON[newStatus][3];
       await statRole.setName(`${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`);
       const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
@@ -112,7 +112,9 @@ async function setBotStatus(servers, client, oldServers) {
   // update activity status
   botStatus.activity = { type: 'PLAYING', name: text.join(', ') };
   botStatus.status = status || "dnd";
-  client.user.setPresence(botStatus);
+  if (client.user.presence.status != botStatus.status || !client.user.presence.activities.some(a=>a.name==botStatus.activity.name)) {
+    client.user.setPresence(botStatus);
+  }
 }
 
 async function mcUpdates(mcClient, logChannel) {
