@@ -129,7 +129,9 @@ async function mcUpdates(mcClient, logChannel) {
       let players = server.players.list || [];
       server.subscribe();
       server.on("status", function(server) {
-          setBotStatus(server, logChannel.client, status);
+          const oldServers = servers;
+          servers[i] = server;
+          setBotStatus(servers, logChannel.client, oldServers);
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
