@@ -102,7 +102,7 @@ async function setBotStatus(servers, client) {
 
     // change color if needed
     const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
-    if (statRole.hexColor != color) {
+    if (statRole.hexColor.toLowerCase() != color.toLowerCase()) {
       await statRole.setColor(color);
     }
   }
