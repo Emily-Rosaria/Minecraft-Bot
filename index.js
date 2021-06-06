@@ -79,7 +79,7 @@ async function setBotStatus(servers, client, oldServers) {
     // status text stuff
     let server = servers[i];
     const statusArr = statJSON[""+server.status];
-    text[i] = statusArr[0] + " " + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
+    text[i] = statusArr[0] + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
     if (""+ server.status == "1") {
       status = "online";
     } else if (status!="online" && ["2","4","6","8","10"].includes(""+ server.status)) {
@@ -95,7 +95,7 @@ async function setBotStatus(servers, client, oldServers) {
     if (!oldServers) {
       const newText = statJSON[newStatus][3];
       await statRole.setName(`${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`);
-      const color = newStats == "5" ? statJSON["0"][2] : statJSON[newStats][2];
+      const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
       await statRole.setColor(color);
     } else {
       const oldStatus = ""+oldServers[i].status;
@@ -103,7 +103,7 @@ async function setBotStatus(servers, client, oldServers) {
       const newText = statJSON[newStatus][3];
       if (oldText != newText) {
         await statRole.setName(`${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`);
-        const color = newStats == "5" ? statJSON["0"][2] : statJSON[newStats][2];
+        const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
         await statRole.setColor(color);
       }
     }
