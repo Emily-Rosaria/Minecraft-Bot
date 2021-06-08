@@ -119,6 +119,10 @@ async function mcUpdates(mcClient, logChannel) {
   let account = await mcClient.getAccount();
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
   let servers = [...await mcClient.getServers()];
+
+  // get channels for message posting/listening
+  var chatChannels = [...new Array(servers.length)].map((a,b)=>servers[b].name.replace(/Rose/,"").toLowerCase()).map(c=>logChannel.guild.channels.resolve(config.channels.chat[c]));
+
   setBotStatus(servers, logChannel.client);
   for (var i = 0; i < servers.length; i++) {
       const num = i;
@@ -126,7 +130,9 @@ async function mcUpdates(mcClient, logChannel) {
       console.log("Subscribing to " + server.name + ". ID: " + server.id);
       let status = ""+server.status || "";
       let players = server.players.list || [];
-      server.subscribe();
+      server.subscribe(); //server.subscribe("console");
+
+      // status updates
       server.on("status", function(server) {
           servers[num] = server;
           setBotStatus(servers, logChannel.client);
@@ -215,6 +221,13 @@ async function mcUpdates(mcClient, logChannel) {
             players = [];
           }
       });
+
+      // message log and shiz
+      /*
+      server.on("console:line", function(data) {
+          console.log(data.line);
+      });
+      */
   }
 }
 
