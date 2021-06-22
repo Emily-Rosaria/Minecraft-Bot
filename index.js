@@ -110,7 +110,7 @@ async function setBotStatus(servers, client) {
   }
 
   // update activity status
-  botStatus.activity = { type: 'PLAYING', name: text.join(', ') };
+  botStatus.activity = { type: 'PLAYING', name: text.filter(t=>t).join(', ') };
   botStatus.status = status || "dnd";
   if (client.user.presence.status != botStatus.status || !client.user.presence.activities.some(a=>a.name==botStatus.activity.name)) {
     client.user.setPresence(botStatus);
