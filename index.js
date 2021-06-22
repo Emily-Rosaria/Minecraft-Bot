@@ -75,35 +75,37 @@ async function setBotStatus(servers, client) {
   var text = [];
   var status = "";
   for (var i = 0; i < servers.length; i++) {
-
     // status text stuff
     const num = i;
     let server = servers[num];
-    const statusArr = statJSON[""+server.status];
-    text[num] = statusArr[0] + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
-    if (""+ server.status == "1") {
-      status = "online";
-    } else if (status!="online" && ["2","4","6","8","10"].includes(""+ server.status)) {
-      status = "idle";
-    } else if (status!="online" && status!="idle") {
-      status = "dnd";
-    }
 
-    // role update stuff
-    const newStatus = ""+server.status;
-    var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status[server.name.replace(/Rose/,"").toLowerCase()]);
+    if (!server.name.toLowerCase().includes("beta")) {
+      const statusArr = statJSON[""+server.status];
+      text[num] = statusArr[0] + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
+      if (""+ server.status == "1") {
+        status = "online";
+      } else if (status!="online" && ["2","4","6","8","10"].includes(""+ server.status)) {
+        status = "idle";
+      } else if (status!="online" && status!="idle") {
+        status = "dnd";
+      }
 
-    // new role name
-    const newText = statJSON[newStatus][3];
-    const roleText = `${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`;
-    if (statRole.name != roleText) {
-      await statRole.setName(roleText);
-    }
+      // role update stuff
+      const newStatus = ""+server.status;
+      var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status[server.name.replace(/Rose/,"").toLowerCase()]);
 
-    // change color if needed
-    const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
-    if (statRole.hexColor.toLowerCase() != color.toLowerCase()) {
-      await statRole.setColor(color);
+      // new role name
+      const newText = statJSON[newStatus][3];
+      const roleText = `${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`;
+      if (statRole.name != roleText) {
+        await statRole.setName(roleText);
+      }
+
+      // change color if needed
+      const color = newStatus == "5" ? statJSON["0"][2] : statJSON[newStatus][2];
+      if (statRole.hexColor.toLowerCase() != color.toLowerCase()) {
+        await statRole.setColor(color);
+      }
     }
   }
 
@@ -131,15 +133,17 @@ async function mcUpdates(mcClient, logChannel) {
       let status = ""+server.status || "";
       let players = server.players.list || [];
       server.subscribe(); //server.subscribe("console");
+      var msgObj = null;
 
       // status updates
-      server.on("status", function(server) {
+      server.on("status", async function(server) {
           servers[num] = server;
           setBotStatus(servers, logChannel.client);
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
           const pingRole = config.pings.status[server.name.replace(/Rose/,"").toLowerCase()];
+
           // do updates for server status
           if ("" + server.status != "" + status) {
             status = "" + server.status;
@@ -159,14 +163,18 @@ async function mcUpdates(mcClient, logChannel) {
               } else {
                 embed.setDescription(`**${server.name}** is ${statusArr[1]}...`);
               }
-              logChannel.send({embed: embed});
+              if (["5","0","6","2"] && msgOnj != null) {
+                msgObj = await msgObj.edit({embed: embed});
+              } else {
+                msgObj = await logChannel.send({embed: embed});
+              }
             } else {
               embed.setDescription(`**${server.name}** is now ${statusArr[1]}!`)
               .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
               .addField("Players",`${server.players.count}/${server.players.max}`,true)
               .addField("Software",`${server.software.name} ${server.software.version}`,true);
               const statusPing = "<@&" + pingRole + ">";
-              logChannel.send({embed: embed, content: statusPing});
+              msgObj = await logChannel.send({embed: embed, content: statusPing});
             }
           } else {
             status = "" + server.status;
