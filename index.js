@@ -163,7 +163,7 @@ async function mcUpdates(mcClient, logChannel) {
               } else {
                 embed.setDescription(`**${server.name}** is ${statusArr[1]}...`);
               }
-              if (["5","0","6","2"] && msgOnj != null) {
+              if (["5","0","6","2"] && msgObj != null) {
                 msgObj = await msgObj.edit({embed: embed});
               } else {
                 msgObj = await logChannel.send({embed: embed});
