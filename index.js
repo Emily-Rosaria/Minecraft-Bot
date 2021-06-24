@@ -133,8 +133,8 @@ async function mcUpdates(mcClient, logChannel) {
       let status = ""+server.status || "";
       let players = server.players.list || [];
       server.subscribe(); //server.subscribe("console");
-      var msgObj = null;
-
+      var msgObj = [];
+      msgObj[i] = null;
       // status updates
       server.on("status", async function(server) {
           servers[num] = server;
@@ -163,10 +163,10 @@ async function mcUpdates(mcClient, logChannel) {
               } else {
                 embed.setDescription(`**${server.name}** is ${statusArr[1]}...`);
               }
-              if (["5","0","6","2"] && msgObj != null) {
-                msgObj = await msgObj.edit({embed: embed});
+              if (["5","0","6","2"].includes(""+server.status) && msgObj[num] != null) {
+                msgObj[num] = await msgObj[num].edit({embed: embed});
               } else {
-                msgObj = await logChannel.send({embed: embed});
+                msgObj[num] = await logChannel.send({embed: embed});
               }
             } else {
               embed.setDescription(`**${server.name}** is now ${statusArr[1]}!`)
@@ -174,7 +174,7 @@ async function mcUpdates(mcClient, logChannel) {
               .addField("Players",`${server.players.count}/${server.players.max}`,true)
               .addField("Software",`${server.software.name} ${server.software.version}`,true);
               const statusPing = "<@&" + pingRole + ">";
-              msgObj = await logChannel.send({embed: embed, content: statusPing});
+              msgObj[num] = await logChannel.send({embed: embed, content: statusPing});
             }
           } else {
             status = "" + server.status;
