@@ -120,7 +120,7 @@ async function setBotStatus(servers, client) {
 async function mcUpdates(mcClient, logChannel) {
   let account = await mcClient.getAccount();
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
-  let servers = [...await mcClient.getServers()];
+  let servers = [...await mcClient.getServers()].filter(s=>["city","origin","origins"].includes(s.name.toLowerCase().replace("rose","")));
 
   // get channels for message posting/listening
   var chatChannels = [...new Array(servers.length)].map((a,b)=>servers[b].name.replace(/Rose/,"").toLowerCase()).map(c=>logChannel.guild.channels.resolve(config.channels.chat[c]));
