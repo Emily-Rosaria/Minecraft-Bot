@@ -3,13 +3,13 @@ const {Client} = require('exaroton');
 require('dotenv').config(); //for .env file
 
 module.exports = {
-    name: 'command', // The name of the command
-    description: 'Executes a server command.', // The description of the command (for help text)
-    allowDM: true,
-    perms: "dev",
-    args: true,
+    name: 'start', // The name of the command
+    description: 'Starts the server.', // The description of the command (for help text)
+    allowDM: false,
+    perms: "whitelist",
+    args: false,
     cooldown: 10,
-    usage: '[server]', // Help text to explain how to use the command (if it had any arguments)
+    usage: '[server address]', // Help text to explain how to use the command (if it had any arguments)
     async execute(message, args) {
       const mcClient = new Client(process.env.MCTOKEN);
       let account = await mcClient.getAccount();
