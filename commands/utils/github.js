@@ -6,7 +6,7 @@ const config = require('./../../config.json'); // load bot config
 module.exports = {
     name: 'github',
     description: 'Posts a link to the github repository.',
-    aliases: ['code','git'],
+    aliases: ['git'],
     perms: false, //no user-based restrictions
     allowDM: true,
     group: 'util',
