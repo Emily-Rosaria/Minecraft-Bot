@@ -11,6 +11,7 @@ module.exports = {
     usage: '[command name]',
     cooldown: 5,
     allowDM: true,
+    group: 'utlity',
     async execute(message, args) {
         const prefix = config.prefix[0];
         const { commands } = message.client;

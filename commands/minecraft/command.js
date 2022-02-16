@@ -9,6 +9,7 @@ module.exports = {
     perms: "dev",
     args: true,
     cooldown: 10,
+    group: 'minecraft',
     usage: '<command>', // Help text to explain how to use the command (if it had any arguments)
     async execute(message, args) {
       return message.reply("Command is WIP. Sorry.");

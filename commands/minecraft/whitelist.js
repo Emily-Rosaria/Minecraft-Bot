@@ -8,6 +8,7 @@ module.exports = {
     description: 'Whitelists a minecraft account!', // The description of the command (for help text)
     allowDM: true,
     cooldown: 10,
+    group: 'minecraft',
     usage: '[username]', // Help text to explain how to use the command (if it had any arguments)
     async execute(message, args) {
 
@@ -15,11 +16,12 @@ module.exports = {
         const mcClient = new Client(process.env.MCTOKEN);
         let account = await mcClient.getAccount();
         let servers = await mcClient.getServers();
+        servers = servers.filter(s=>config.mcServers.includes(s.name));
         let server = servers.shift();
         try {
           let list = server.getPlayerList("whitelist");
           const whitelist = await list.getEntries();
-          await message.reply("The server whitelist should be:\n>>> "+whitelist.join('\n'));
+          await message.reply("The server whitelist should be:\n```\n"+whitelist.join('\n')+"\n```");
         } catch (e) {
           const errorMsg = e.stack.toString().length > 1900 ? e.stack.toString().slice(0,1900) + "..." : e.stack.toString();
           await message.reply("Error running command:\n```\n"+errorMsg+"\n```");
@@ -35,13 +37,14 @@ module.exports = {
       const mcClient = new Client(process.env.MCTOKEN);
       let account = await mcClient.getAccount();
       let servers = await mcClient.getServers();
+      servers = servers.filter(s=>config.mcServers.includes(s.name));
       try {
         for (let server of servers) {
           let list = server.getPlayerList("whitelist");
           await list.addEntry(args[0]); // add just one entry
           const whitelist = await list.getEntries();
         }
-        await message.reply("Done! The user `" + args[0] + "` was successfully added to both server's whitelists.");
+        await message.reply("Done! The user `" + args[0] + "` was successfully added to any server's whitelists.");
       } catch (e) {
           const errorMsg = e.stack.toString().length > 1900 ? e.stack.toString().slice(0,1900) + "..." : e.stack.toString();
           await message.reply("Error running command:\n```\n"+errorMsg+"\n```");

@@ -7,6 +7,7 @@ module.exports = {
     description: 'Make the bot say random predetermined phrases (this is mostly a test function).', // The description of the command (for help text)
     args: false, // Specified that this command doesn't need any data other than the command
     allowDM: true,
+    group: 'utlity',
     usage: '', // Help text to explain how to use the command (if it had any arguments)
     execute(message, args) {
 
@@ -15,7 +16,8 @@ module.exports = {
             'Hello, World.',
             'The Quick Brown Fox Jumps Over The Lazy Dog',
             'I am the very model of a modern major general.',
-            'The mitochondria is the powerhouse of the cell.'
+            'The mitochondria is the powerhouse of the cell.',
+            'There is no ethical consumtion under capitalism.'
         ];
 
         message.reply(phrases[Math.floor(Math.random()*phrases.length)]); // Replies to the user with a random phrase

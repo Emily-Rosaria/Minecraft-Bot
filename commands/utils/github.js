@@ -9,6 +9,7 @@ module.exports = {
     aliases: ['code','git'],
     perms: false, //no user-based restrictions
     allowDM: true,
+    group: 'utlity',
     async execute(message, args) {
         message.reply("My spaghetti source code can be found here:\n> "+config.github);
     },

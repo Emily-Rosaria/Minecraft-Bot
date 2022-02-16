@@ -1,5 +1,6 @@
 const Discord = require('discord.js'); // Embed
 const {Client} = require('exaroton');
+const config = require('./config.json'); // load bot config
 require('dotenv').config(); //for .env file
 
 module.exports = {
@@ -8,20 +9,21 @@ module.exports = {
     aliases: ['credit','money','funds','bank','cost'],
     allowDM: true,
     cooldown: 10,
+    group: 'minecraft',
     usage: '', // Help text to explain how to use the command (if it had any arguments)
     async execute(message, args) {
 
       const mcClient = new Client(process.env.MCTOKEN);
       let account = await mcClient.getAccount();
       let servers = await mcClient.getServers();
-      let server = servers.shift();
+      let server = servers.filter(s=>config.mcServers.includes(s.name)).shift();
       let ram = await server.getRAM();
       const hours = Math.floor(account.credits / ram);
       const days = Math.floor(hours / 4);
       const color = hours > 20 ? "#37d53f" : (hours > 10 ? "#fa7f26" : "#ff0000");
       const embed = new Discord.MessageEmbed()
       .setTitle("The Server Bank")
-      .setDescription(`Hosting costs about 1 credit / 1 GB RAM / 1 hour. Currently, we should have about ${hours} of uptime left. This will likely equate to at least ${days} days, assuming the server is up for an average of 4 hours per day.`)
+      .setDescription(`Hosting costs about 1 credit / 1 GB RAM / 1 hour. Currently, we should have about ${hours} of uptime left. This will likely equate to at least ${days} days, assuming the server is up for an average of 4 hours per day. Note that this may not account for other servers I may be hosting.`)
       .setColor(color)
       .addField("Credits",`${account.credits}`,true)
       .addField("RAM",`${ram} GB`,true)

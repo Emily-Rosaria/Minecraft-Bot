@@ -10,11 +10,13 @@ module.exports = {
     perms: "whitelist",
     args: false,
     cooldown: 10,
+    group: 'minecraft',
     usage: '[server address]', // Help text to explain how to use the command (if it had any arguments)
     async execute(message, args) {
       const mcClient = new Client(process.env.MCTOKEN);
       let account = await mcClient.getAccount();
       let servers = await mcClient.getServers();
+      servers = servers.filter(s=>config.mcServers.includes(s.name));
       const statJSON = {
         "0": ["🔴","Offline","#FF0000"],
         "1": ["🟢","Online","#37d53f"],
@@ -32,7 +34,7 @@ module.exports = {
       if (servers.length == 1) {
         server = servers[0];
       } else if (args.length != 0) {
-        const arg = args[0].toLowerCase().replace("city","origin");
+        const arg = args[0].toLowerCase().replace("rose","");
         server = servers.filter(s => s.address.toLowerCase().match(arg));
         if (server.length == 1) {
           server = server[0];
@@ -40,7 +42,7 @@ module.exports = {
           return message.reply("Invalid server name.");
         }
       } else {
-        return message.reply("Invalid server name.");
+        return message.reply("Unable to find a specific server to start. Try specifying a server more specifically, such as `$start city`, `$start RoseCity`, or `$start rosecity.exaroton.me`.");
       }
       const status = statJSON[""+server.status];
       if (server.status == 1) {

@@ -81,7 +81,7 @@ async function setBotStatus(servers, client) {
 
     if (!server.name.toLowerCase().includes("beta")) {
       const statusArr = statJSON[""+server.status];
-      text[num] = statusArr[0] + server.name.replace(/Rose/,"").replace("City","Origins") + ": " + server.players.count + "/" + server.players.max;
+      text[num] = statusArr[0] + server.name.replace(/Rose/,"") + ": " + server.players.count + "/" + server.players.max;
       if (""+ server.status == "1") {
         status = "online";
       } else if (status!="online" && ["2","4","6","8","10"].includes(""+ server.status)) {
@@ -92,11 +92,11 @@ async function setBotStatus(servers, client) {
 
       // role update stuff
       const newStatus = ""+server.status;
-      var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status[server.name.replace(/Rose/,"").toLowerCase()]);
+      var statRole = client.guilds.resolve(config.guild).roles.resolve(config.roles.status[server.name]);
 
       // new role name
       const newText = statJSON[newStatus][3];
-      const roleText = `${server.name.replace(/Rose/,"").replace("City","Origins")} Server: ${newText}`;
+      const roleText = `${server.name}: ${newText}`;
       if (statRole.name != roleText) {
         await statRole.setName(roleText);
       }
@@ -120,10 +120,10 @@ async function setBotStatus(servers, client) {
 async function mcUpdates(mcClient, logChannel) {
   let account = await mcClient.getAccount();
   console.log("My account is " + account.name + " and I have " + account.credits + " credits.");
-  let servers = [...await mcClient.getServers()].filter(s=>["city","origin","origins"].includes(s.name.toLowerCase().replace("rose","")));
+  let servers = [...await mcClient.getServers()].filter(s=>config.mcServers.includes(s.name));
 
   // get channels for message posting/listening
-  var chatChannels = [...new Array(servers.length)].map((a,b)=>servers[b].name.replace(/Rose/,"").toLowerCase()).map(c=>logChannel.guild.channels.resolve(config.channels.chat[c]));
+  var chatChannels = [...new Array(servers.length)].map((a,b)=>logChannel.guild.channels.resolve(config.channels.chat[servers[b].name]);
 
   setBotStatus(servers, logChannel.client);
   for (var i = 0; i < servers.length; i++) {
@@ -142,7 +142,7 @@ async function mcUpdates(mcClient, logChannel) {
           const title = server.name;
           const footer = server.address;
           const statusArr = statJSON[""+server.status];
-          const pingRole = config.pings.status[server.name.replace(/Rose/,"").toLowerCase()];
+          const pingRole = config.pings.status[server.name];
 
           // do updates for server status
           if ("" + server.status != "" + status) {
@@ -217,7 +217,7 @@ async function mcUpdates(mcClient, logChannel) {
               const embed = new Discord.MessageEmbed()
               .setTitle(title + " - Server Notice")
               .setFooter(footer)
-              .setDescription("As there are currently no players online, the server may automatically go offline in just under 10 minutes.")
+              .setDescription("As there are currently no players online, the server may automatically go offline in just under 15 minutes.")
               .setColor("#37d53f")
               .addField("Status",`${statusArr[0]} ${statusArr[1]}`,true)
               .addField("Players",`${server.players.count}/${server.players.max}`,true)

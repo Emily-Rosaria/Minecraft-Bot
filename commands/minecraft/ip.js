@@ -1,5 +1,6 @@
 const Discord = require('discord.js'); // Embed
 const {Client} = require('exaroton');
+const config = require('./config.json'); // load bot config
 require('dotenv').config(); //for .env file
 
 module.exports = {
@@ -8,12 +9,14 @@ module.exports = {
     aliases: ['address'],
     allowDM: true,
     cooldown: 10,
+    group: 'minecraft',
     usage: '', // Help text to explain how to use the command (if it had any arguments)
     async execute(message, args) {
 
       const mcClient = new Client(process.env.MCTOKEN);
       let account = await mcClient.getAccount();
       let servers = await mcClient.getServers();
+      servers = servers.filter(s=>config.mcServers.includes(s.name));
       const statJSON = {
         "0": ["🔴","Offline","#FF0000"],
         "1": ["🟢","Online","#37d53f"],

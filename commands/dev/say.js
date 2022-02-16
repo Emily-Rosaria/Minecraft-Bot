@@ -5,6 +5,7 @@ module.exports = {
     description: 'Says stuff in a channel.', // The description of the command (for help text)
     perms: 'dev',
     allowDM: true,
+    group: 'dev',
     usage: '<channelID> <message-text>', // Help text to explain how to use the command (if it had any arguments)
     args: 2,
     execute(message, args) {
