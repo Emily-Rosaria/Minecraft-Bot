@@ -7,7 +7,7 @@ module.exports = {
     description: 'Make the bot say random predetermined phrases (this is mostly a test function).', // The description of the command (for help text)
     args: false, // Specified that this command doesn't need any data other than the command
     allowDM: true,
-    group: 'utlity',
+    group: 'util',
     usage: '', // Help text to explain how to use the command (if it had any arguments)
     execute(message, args) {
 
