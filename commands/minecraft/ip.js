@@ -1,6 +1,6 @@
 const Discord = require('discord.js'); // Embed
 const {Client} = require('exaroton');
-const config = require('./config.json'); // load bot config
+const config = require('./../../config.json'); // load bot config
 require('dotenv').config(); //for .env file
 
 module.exports = {

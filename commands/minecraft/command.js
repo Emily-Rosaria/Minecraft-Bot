@@ -1,6 +1,7 @@
 const Discord = require('discord.js'); // Embed
 const {Client} = require('exaroton');
 require('dotenv').config(); //for .env file
+const config = require('./../../config.json'); // load bot config
 
 module.exports = {
     name: 'command', // The name of the command
