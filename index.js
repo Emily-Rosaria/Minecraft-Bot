@@ -123,7 +123,7 @@ async function mcUpdates(mcClient, logChannel) {
   let servers = [...await mcClient.getServers()].filter(s=>config.mcServers.includes(s.name));
 
   // get channels for message posting/listening
-  var chatChannels = [...new Array(servers.length)].map((a,b)=>logChannel.guild.channels.resolve(config.channels.chat[servers[b].name]);
+  var chatChannels = [...new Array(servers.length)].map((a,b)=>logChannel.guild.channels.resolve(config.channels.chat[servers[b].name]));
 
   setBotStatus(servers, logChannel.client);
   for (var i = 0; i < servers.length; i++) {
